@@ -1,8 +1,10 @@
 *.jpg
 *.png
 *.pdf
+/package-lock.json
 
 *test*
 
 /node_modules/
 /.idea/
+*chapter*
