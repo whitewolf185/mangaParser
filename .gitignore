@@ -1,0 +1,8 @@
+*.jpg
+*.png
+*.pdf
+
+*test*
+
+/node_modules/
+/.idea/
