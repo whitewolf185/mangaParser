@@ -1,3 +1,4 @@
+/*
 var https = require('follow-redirects').https;
 var fs = require('fs');
 
@@ -6,7 +7,7 @@ var options = {
     'hostname': 's6.mkklcdnv6tempv3.com',
     'path': '/mangakakalot/k1/kaguyasama_wa_kokurasetai_tensaitachi_no_renai_zunousen/chapter_197_the_shirogane_family_wants_to_move/1.jpg',
     'headers': {
-        'Accept': 'image/webp,*/*',
+        'Accept': 'image/webp,*!/!*',
         'Accept-Encoding': 'gzip, deflate, br',
         'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
         'Cache-Control': 'max-age=0',
@@ -35,4 +36,4 @@ var req = https.request(options, function (res) {
     });
 });
 
-req.end();
+req.end();*/

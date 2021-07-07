@@ -2,20 +2,47 @@ const util = require('util');
 const https = require('follow-redirects').https;
 const fs = require('fs');
 const writeFile = util.promisify(fs.writeFile)
-const URL = '/series/abyss/chapters/1/';
 const parallel = require('async/parallel');
 const exec = util.promisify(require('child_process').exec);
 const nodemailer = require('nodemailer');
-//whitewolf_185@pbsync.com
+const fetch = require('node-fetch');
 
-var options = {
-    'method': 'GET',
-    'hostname': 'images.catmanga.org',
-    'path': '/series/abyss/chapters/1/',
-    'headers': {
+//whitewolf_185@pbsync.com
+// ----временная информация----
+const manga_name = 'abyss';
+const ch_list = [51,33,30,19,19,19,23,18,19,19,19,18,19,18,21,19]
+
+//-----------------------------
+let sources = [
+    {
+        name: "catmanga",
+        path: "https://images.catmanga.org/series/abyss/chapters/",
+        options: {
+            method: 'GET',
+            redirect: 'follow'
+        }
     },
-    'maxRedirects': 20
-};
+    {
+        name: "mangakakalot",
+        options: {
+            'method': 'GET',
+            'hostname': 's6.mkklcdnv6tempv3.com',
+            'path': '/mangakakalot/k1/kaguyasama_wa_kokurasetai_tensaitachi_no_renai_zunousen/chapter_197_the_shirogane_family_wants_to_move/1.jpg',
+            'headers': {
+                'Accept': 'image/webp,*!/!*',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
+                'Cache-Control': 'max-age=0',
+                'Connection': 'keep-alive',
+                'Host': 's6.mkklcdnv6tempv3.com',
+                'Referer': 'https://manganelo.com/',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:87.0) Gecko/20100101 Firefox/87.0'
+            },
+            'maxRedirects': 20
+        }
+    }
+]
+
 
 async function send_to_Email (filePath, fileName){
     let tranporter = nodemailer.createTransport({
@@ -71,6 +98,79 @@ let check_dir = async function (path) {
        }
     });
     return result;
+}
+
+let dwld_ch = async function(source, ch, img_count){
+    return async function (callback){
+        await fs.mkdir(__dirname + '/chapter'+ch+'/', (e) => {
+            if(e.code === 'EEXIST'){
+                console.log('Directory has already exist');
+            }
+            else if (e) {
+                throw e;
+            }
+        })
+
+
+        let filesPath = [];
+        let b = [];
+        let path = "";
+
+
+        for (let i = 1; i < img_count + 1; i++) {
+            if (i < 10){
+                path = "00"+i+".png";
+            }
+            else{
+                path = "0"+i+".png"
+            }
+
+            let a = (optionPath) => {
+                return async function (callback) {
+                    source.path += optionPath;
+                    const res = await fetch(source.path, source.options);
+                    if(res.ok) {
+                        const fileStream = fs.createWriteStream(__dirname + __dirname + '/chapter' + ch
+                            + '/img' + i + '.png');
+
+                        callback(null, i);
+                    }
+                }
+            }
+            filesPath.push({
+                id: i,
+                path: __dirname + "/chapter1/img" + i
+            });//TODO надо расставить в нужных местах нормальные имена файлов
+
+
+            b.push(a(path));
+
+        }
+
+    }
+}
+
+let ch_chooser = async function (chapters_count){
+    await fs.mkdir(__dirname + '/chapters/', (e) => {
+        if(e.code === 'EEXIST'){
+            console.log('Directory has already exist');
+        }
+        else if (e) {
+            throw e;
+        }
+    })
+
+    let tasks_pic = [];
+
+    for (let i = 1; i <= chapters_count; i++) {
+        let source = sources[0];
+        source.path += i + '/';
+        tasks_pic.push(dwld_ch(source,i,ch_list[i-1]));
+    }
+
+    parallel(tasks_pic, (err, result) => {
+        console.log("ch_chooser ", result);
+    })
 }
 
 let dwld_imgs = new Promise(((resolve, reject) => {
