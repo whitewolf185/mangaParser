@@ -83,17 +83,18 @@ function cleanOut () {
 }
 
 let dwld_ch = function(source, ch, img_count){
-    return async function (callback){
-        await fs.mkdir(__dirname + '/chapter'+ch+'/', (e) => {
-            if(e){
-                if(e.code === 'EEXIST'){
-                    console.log('Directory has already exist');
-                }
-                else {
-                    throw e;
-                }
+    let new_ch = ch;
+
+    return function (callback){
+        try {
+            fs.mkdirSync(__dirname + '/chapter'+new_ch+'/');
+        }
+        catch (e) {
+            if(e.code === "EEXIST"){
+                console.log("Directory ok");
             }
-        })
+        }
+
 
 
         let b = [];
@@ -109,62 +110,58 @@ let dwld_ch = function(source, ch, img_count){
             }
 
             let a = (optionPath) => {
-                return async function (callback) {
-                    let local_path = optionPath;
-                    const res = await fetch(local_path, source.options);
-                    if(res.ok) {
-                        const fileStream = fs.createWriteStream(__dirname + __dirname + '/chapter' + ch
+                return async function () {
+                    const res = await fetch(optionPath, source.options);
+                    console.log(res.statusText);
+                    if(res.statusText === "OK") {
+                        const fileStream = fs.createWriteStream( __dirname + '/chapter' + new_ch
                             + '/img' + i + '.png');
                         await new Promise((resolve, reject) => {
                             res.body.pipe(fileStream)
                             res.body.on("error", reject);
                             fileStream.on("finish", resolve);
                         })
-
-                        callback(null, i);
+                        console.log("117 ", i);
                     }
+                    return i;
                 }
             }
-
-
             b.push(a(path));
 
         }
 
-        await parallel(b, (err, result) => {
+        parallel(b, (err, result) => {
             console.log("I've completed tasks ", result);
+            callback(null, "chapter " + new_ch);
             if(err) throw err;
         })
-
-        callback(null, "chapter " + ch);
 
     }
 }
 
-let ch_chooser = async function (chapters_count){
-    await fs.mkdir(__dirname + '/chapters/', (e) => {
-        if(e){
-            if(e.code === 'EEXIST'){
-                console.log('Directory has already exist');
-            }
-            else {
-                throw e;
-            }
+let ch_chooser = function (chapters_count){
+    try {
+        fs.mkdirSync(__dirname + '/chapters/');
+    }
+    catch (e) {
+        if(e.code === "EEXIST"){
+            console.log("Directory ok");
         }
-    })
+    }
+
 
     new Promise(resolve => {
         let tasks_pic = [];
 
         for (let i = 1; i <= chapters_count; i++) {
-            let source = sources[0];
+            let source = {...sources[0]};
             source.path += i + '/';
             tasks_pic.push(dwld_ch(source,i,ch_list[i-1]));
         }
 
         parallel(tasks_pic, (err, result) => {
             console.log("ch_chooser ", result);
-
+            if(err) throw err;
             resolve();
         })
     })
@@ -172,14 +169,14 @@ let ch_chooser = async function (chapters_count){
             () => {
                 console.log("im generating pdf file...");
 
-                exec('./img2pdf.sh chapter1 chapter_1.pdf')
+                /*exec('./img2pdf.sh chapter1 chapter_1.pdf')
                     .then(
                         output => {
                             console.log(output.stdout);
-                            /*send_to_Email(__dirname + "/chapter_1.pdf", "Abyss_ch1.pdf")
+                            /!*send_to_Email(__dirname + "/chapter_1.pdf", "Abyss_ch1.pdf")
                                 .then(result =>{
                                     // cleanOut();
-                                })*/
+                                })*!/
                         }
                     )
                     .catch(
@@ -187,7 +184,7 @@ let ch_chooser = async function (chapters_count){
                             console.log(stderr);
                         }
                     )
-
+*/
             }
         )
 
@@ -205,9 +202,7 @@ let ch_chooser = async function (chapters_count){
 
 
 
-ch_chooser(16).then(() => {
-    console.log("Done");
-})
+ch_chooser(16)
 
 
 
