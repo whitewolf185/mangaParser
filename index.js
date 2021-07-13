@@ -1,16 +1,17 @@
 const util = require('util');
-const https = require('follow-redirects').https;
 const fs = require('fs');
-const writeFile = util.promisify(fs.writeFile)
 const parallel = require('async/parallel');
 const exec = util.promisify(require('child_process').exec);
-const nodemailer = require('nodemailer');
 const fetch = require('node-fetch');
+const rimraf = require('rimraf');
+let mailer = require('./mailer');
+
 
 //whitewolf_185@pbsync.com
 // ----временная информация----
 const manga_name = 'abyss';
-const ch_list = [51,33,30,19,19,19,23,18,19,19,19,18,19,18,21,19]
+const ch_list = [51,33,30,19,19,19,23,18,19,19,19,18,19,18,21,19];
+//TODO сделать автоматичкое получение количества страниц
 
 //-----------------------------
 let sources = [
@@ -44,26 +45,6 @@ let sources = [
 ]
 
 
-async function send_to_Email (filePath, fileName){
-    let tranporter = nodemailer.createTransport({
-        host: 'smtp.mail.ru',
-        port: 465,
-        secure: true,
-        auth:{
-            user: '',
-            pass: ''
-        }
-    })
-
-    let result = tranporter.sendMail({
-        from: 'matvey2001xxl1976@mail.ru matvey2001xxl1976@mail.ru',
-        to: 'whitewolf_185@pbsync.com whitewolf_185@pbsync.com',
-        attachments: {filename: fileName, path: filePath}
-    })
-
-    console.log(result);
-    return result;
-}
 
 
 
@@ -200,9 +181,9 @@ let ch_chooser = function (chapters_count){
 
 }
 
+new mailer();
 
-
-ch_chooser(16)
+// ch_chooser(16);
 
 
 
