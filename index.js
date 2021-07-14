@@ -120,7 +120,11 @@ let dwld_ch = function(source, ch, img_count){
     }
 }
 
-let ch_chooser = function (chapters_count){
+let ch_chooser = function (chapters_count, downloadOptions){
+    if(downloadOptions.send_Email === true){
+        new mailer();
+    }
+
     try {
         fs.mkdirSync(__dirname + '/chapters/');
     }
@@ -150,14 +154,20 @@ let ch_chooser = function (chapters_count){
             () => {
                 console.log("im generating pdf file...");
 
-                /*exec('./img2pdf.sh chapter1 chapter_1.pdf')
+
+                exec('./img2pdf.sh chapter1 chapter_1.pdf')
                     .then(
                         output => {
                             console.log(output.stdout);
-                            /!*send_to_Email(__dirname + "/chapter_1.pdf", "Abyss_ch1.pdf")
-                                .then(result =>{
-                                    // cleanOut();
-                                })*!/
+                            if(downloadOptions.send_Email === true) {
+                                mailer.send_to_Email(__dirname + "/chapter_1.pdf", "Abyss_ch1.pdf")
+                                    .then(result =>{
+                                        // cleanOut();
+                                    })
+                                    .catch(e => {
+                                        console.log(e);
+                                    })
+                            }
                         }
                     )
                     .catch(
@@ -165,7 +175,6 @@ let ch_chooser = function (chapters_count){
                             console.log(stderr);
                         }
                     )
-*/
             }
         )
 
@@ -181,9 +190,11 @@ let ch_chooser = function (chapters_count){
 
 }
 
-new mailer();
 
-// ch_chooser(16);
+
+ch_chooser(16, {
+    send_Email: true
+});
 
 
 
