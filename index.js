@@ -96,7 +96,7 @@ let dwld_ch = function(source, ch, img_count){
                     console.log(res.statusText);
                     if(res.statusText === "OK") {
                         const fileStream = fs.createWriteStream( __dirname + '/chapter' + new_ch
-                            + '/img' + i + '.png');
+                            + '/img_' + i + '.png');
                         await new Promise((resolve, reject) => {
                             res.body.pipe(fileStream)
                             res.body.on("error", reject);
@@ -136,45 +136,52 @@ let ch_chooser = function (chapters_count, downloadOptions){
 
 
     new Promise(resolve => {
-        let tasks_pic = [];
+        if(downloadOptions.download === true) {
+            let tasks_pic = [];
 
-        for (let i = 1; i <= chapters_count; i++) {
-            let source = {...sources[0]};
-            source.path += i + '/';
-            tasks_pic.push(dwld_ch(source,i,ch_list[i-1]));
+            for (let i = 1; i <= chapters_count; i++) {
+                let source = {...sources[0]};
+                source.path += i + '/';
+                tasks_pic.push(dwld_ch(source, i, ch_list[i - 1]));
+            }
+
+            parallel(tasks_pic, (err, result) => {
+                console.log("ch_chooser ", result);
+                if (err) throw err;
+                resolve();
+            })
         }
-
-        parallel(tasks_pic, (err, result) => {
-            console.log("ch_chooser ", result);
-            if(err) throw err;
+        else{
             resolve();
-        })
+        }
     })
         .then(
             () => {
-                console.log("im generating pdf file...");
+                if(downloadOptions.makePDF === true) {
+                    console.log("im generating pdf file...");
 
 
-                exec('./img2pdf.sh chapter1 chapter_1.pdf')
-                    .then(
-                        output => {
-                            console.log(output.stdout);
-                            if(downloadOptions.send_Email === true) {
-                                mailer.send_to_Email(__dirname + "/chapter_1.pdf", "Abyss_ch1.pdf")
-                                    .then(result =>{
-                                        // cleanOut();
-                                    })
-                                    .catch(e => {
-                                        console.log(e);
-                                    })
+                    exec('./img2pdf.sh chapter1 chapter_1.pdf')
+                        .then(
+                            output => {
+                                console.log(output.stdout);
+                                if (downloadOptions.send_Email === true) {
+                                    mailer.send_to_Email(__dirname + "/chapter_1.pdf", "Abyss_ch1.pdf")
+                                        .then(result => {
+                                            // cleanOut();
+                                        })
+                                        .catch(e => {
+                                            console.log(e);
+                                        })
+                                }
                             }
-                        }
-                    )
-                    .catch(
-                        stderr => {
-                            console.log(stderr);
-                        }
-                    )
+                        )
+                        .catch(
+                            stderr => {
+                                console.log(stderr);
+                            }
+                        )
+                }
             }
         )
 
@@ -193,7 +200,9 @@ let ch_chooser = function (chapters_count, downloadOptions){
 
 
 ch_chooser(16, {
-    send_Email: true
+    send_Email: false,
+    makePDF: false,
+    download: true
 });
 
 
