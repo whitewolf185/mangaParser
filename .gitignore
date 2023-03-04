@@ -2,10 +2,8 @@
 *.png
 *.pdf
 token.txt
-/package-lock.json
 
-*test*
+.idea/
 
-/node_modules/
-/.idea/
-*chapter*
+values_local.yaml
+sectet.yaml
