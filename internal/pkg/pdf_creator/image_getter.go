@@ -36,11 +36,11 @@ func (ig imageGetter) GetImageAndSave(
 	go func() {
 		defer wg.Done()
 		res, err := http.Get(url)
-		defer res.Body.Close()
 		if err != nil {
 			ec.PutError(err)
 			return
 		}
+		defer res.Body.Close()
 		if ctxErr := ctx.Err(); ctxErr != nil { // проверяем контекст на истечение дедлайна
 			ec.PutError(ctxErr)
 			return
@@ -52,11 +52,11 @@ func (ig imageGetter) GetImageAndSave(
 		}
 		pathToSave := fmt.Sprintf(formatToSaveFile, folderPathToSave, page, extension)
 		file, err := os.Create(pathToSave) // открываем файл
-		defer file.Close()
 		if err != nil {
 			ec.PutError(fmt.Errorf("cannot open file %d\nError: %w", page, err))
 			return
 		}
+		defer file.Close()
 		if ctxErr := ctx.Err(); ctxErr != nil { // проверяем контекст на истечение дедлайна
 			ec.PutError(ctxErr)
 			return

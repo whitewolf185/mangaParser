@@ -10,7 +10,7 @@ import (
 	"github.com/whitewolf185/mangaparser/internal/pkg/err_controller"
 )
 
-//go:generate mockgen -destination=./mock/image_getter.go -package=getter_mock github.com/whitewolf185/mangaparser/internal/pkg/pdf_creator ImageGetter
+//go:generate mockgen -destination=./mock/image_getter_mock.go -package=mock github.com/whitewolf185/mangaparser/internal/pkg/pdf_creator ImageGetter
 type (
 	// ImageGetter - интерфейс получения картинки по url
 	ImageGetter interface {
@@ -43,7 +43,6 @@ func (ic imageController) GetImagesFromURLs(ctx context.Context, folderPathToSav
 	}
 	wg.Wait()
 	if erResult := ic.errController.IsNul(); erResult != nil {
-		// TODO переделать на github.com/pkg/errors
 		// TODO сделать здесь возврат своей ошибки
 		return fmt.Errorf("something wrong with download images \nErrors list:\n%v", erResult)
 	}
