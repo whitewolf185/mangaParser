@@ -15,12 +15,11 @@ import (
 func Test_imageGetter_GetImageAndSave(t *testing.T) {
 	ctx := context.Background()
 	ec := err_controller.NewErrController()
-	folderController := func(folderPathToSave string) error {
+	folderController := func(folderPathToSave string) {
 		err := os.MkdirAll(folderPathToSave, os.ModePerm)
 		if err != nil {
-			return err
+			t.Fatal(err)
 		}
-		return nil
 	}
 	type args struct {
 		wg               *sync.WaitGroup
@@ -51,10 +50,7 @@ func Test_imageGetter_GetImageAndSave(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := folderController(tt.args.folderPathToSave)
-			if err != nil {
-				t.Error(err)
-			}
+			folderController(tt.args.folderPathToSave)
 			t.Cleanup(func() {
 				if tt.cleanUp != nil {
 					tt.cleanUp(t, tt.args.folderPathToSave)

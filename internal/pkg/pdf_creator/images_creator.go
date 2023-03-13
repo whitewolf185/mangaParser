@@ -6,6 +6,7 @@ import (
 	"os"
 	"sync"
 
+	"github.com/pkg/errors"
 	"github.com/whitewolf185/mangaparser/internal/config"
 	"github.com/whitewolf185/mangaparser/internal/pkg/err_controller"
 )
@@ -52,7 +53,7 @@ func (ic imageController) GetImagesFromURLs(ctx context.Context, folderPathToSav
 func (ic imageController) folderController(folderPathToSave string) error {
 	err := os.MkdirAll(folderPathToSave, os.ModePerm)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "unexpected error in folderController")
 	}
 	return nil
 }
