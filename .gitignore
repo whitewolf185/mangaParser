@@ -4,6 +4,8 @@
 token.txt
 
 .idea/
+.vscode/
 
 values_local.yaml
 sectet.yaml
+db-reset.ps1
