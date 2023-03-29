@@ -21,8 +21,8 @@ func Test_getImagesPathStr(t *testing.T) {
 	}{
 		{
 			name:          "all good",
-			imagesDirPath: "imgs_test",
-			want:          []string{"imgs_test/1.jpg", "imgs_test/2.jpg", "imgs_test/12.jpg"},
+			imagesDirPath: "imgs_1test",
+			want:          []string{"imgs_1test/1.jpg", "imgs_1test/2.jpg", "imgs_1test/12.jpg"},
 			wantErr:       nil,
 		},
 		{
@@ -35,10 +35,16 @@ func Test_getImagesPathStr(t *testing.T) {
 			name:          "empty files err",
 			imagesDirPath: emptyDirPath,
 			prepare: func() {
-				os.Mkdir(emptyDirPath, os.ModePerm)
+				err := os.Mkdir(emptyDirPath, os.ModePerm)
+				if err != nil{
+					t.Fatal(err)
+				}
 			},
 			cleanUp: func() {
-				os.RemoveAll(emptyDirPath)
+				err := os.RemoveAll(emptyDirPath)
+				if err != nil{
+					t.Fatal(err)
+				}
 			},
 			want:    nil,
 			wantErr: customerrors.ErrEmptyDir,
@@ -78,7 +84,7 @@ func TestCreatePDFFromImagesDir(t *testing.T) {
 		{
 			name: "all good",
 			args: args{
-				imagesDirPath: "imgs_test",
+				imagesDirPath: "imgs_1test",
 				outputPath: "out.pdf",
 			},
 			cleanUp: func(){
