@@ -35,17 +35,17 @@ func (m *MockEmailGetter) EXPECT() *MockEmailGetterMockRecorder {
 	return m.recorder
 }
 
-// GetEmail mocks base method.
-func (m *MockEmailGetter) GetEmail(arg0 context.Context, arg1 uuid.UUID) (string, error) {
+// GetEmailByID mocks base method.
+func (m *MockEmailGetter) GetEmailByID(arg0 context.Context, arg1 uuid.UUID) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetEmail", arg0, arg1)
+	ret := m.ctrl.Call(m, "GetEmailByID", arg0, arg1)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetEmail indicates an expected call of GetEmail.
-func (mr *MockEmailGetterMockRecorder) GetEmail(arg0, arg1 interface{}) *gomock.Call {
+// GetEmailByID indicates an expected call of GetEmailByID.
+func (mr *MockEmailGetterMockRecorder) GetEmailByID(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEmail", reflect.TypeOf((*MockEmailGetter)(nil).GetEmail), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEmailByID", reflect.TypeOf((*MockEmailGetter)(nil).GetEmailByID), arg0, arg1)
 }

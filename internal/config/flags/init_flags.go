@@ -19,12 +19,12 @@ type Configs struct {
 }
 
 var (
-	used bool
+	used bool = false
 	currentFileDir string
 )
 
 func init() {
-	if currentFileDir != ""{
+	if currentFileDir == ""{
 		_, filename, _, _ := runtime.Caller(0)
 		currentFileDir = filepath.Dir(filename)
 	}

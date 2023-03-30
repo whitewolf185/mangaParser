@@ -7,4 +7,8 @@ var (
 	ErrEmptyDir = errors.New("empty directory")
 	// ErrEmptyStr ошибка сигнализирует о том, что пришеджая в функцию строка пустая
 	ErrEmptyStr = errors.New("empty string input")
+
+
+	// ErrEmailsNotFound ошибка сигнализирует о том, что не было найдено email по id пользователя
+	ErrEmailsNotFound = errors.New("emails not found")
 )

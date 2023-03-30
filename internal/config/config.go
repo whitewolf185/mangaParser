@@ -12,7 +12,7 @@ type configName string
 const (
 	EmailAccount = configName("email_account")
 	EmailPassword = configName("email_password")
-	SmtpServer = configName("smtp_server")
+	DbDsn = configName("db_dsn")
 )
 
 func GetValue(cnfg configName) string {

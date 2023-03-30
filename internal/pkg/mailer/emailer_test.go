@@ -29,7 +29,7 @@ func TestEbookMailer_SendManga(t *testing.T) {
 			mockGen: func(ctrl *gomock.Controller) EmailGetter {
 				mm := mock.NewMockEmailGetter(ctrl)
 				from := config.GetValue(config.EmailAccount)
-				mm.EXPECT().GetEmail(gomock.Any(), gomock.Any()).Return(from, nil)
+				mm.EXPECT().GetEmailByID(gomock.Any(), gomock.Any()).Return(from, nil)
 				return mm
 			},
 			args: args{

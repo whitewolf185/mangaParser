@@ -11,7 +11,7 @@ import (
 
 //go:generate mockgen -destination=./mock/email_getter_mock.go -package=mock github.com/whitewolf185/mangaparser/internal/pkg/mailer EmailGetter
 type EmailGetter interface {
-	GetEmail(ctx context.Context, personID uuid.UUID) (string, error)
+	GetEmailByID(ctx context.Context, personID uuid.UUID) (string, error)
 }
 
 type EbookMailer struct{
@@ -29,7 +29,7 @@ func NewEbookMailer(adressGetter EmailGetter) EbookMailer {
 }
 
 func (em EbookMailer) SendManga(ctx context.Context, personID uuid.UUID, mangaFilePath string) error {
-	toEmailAdress, err := em.adressGetter.GetEmail(ctx, personID)
+	toEmailAdress, err := em.adressGetter.GetEmailByID(ctx, personID)
 	if err != nil{
 		return errors.Wrap(err, "failred to get email adress from db")
 	}
