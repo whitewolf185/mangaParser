@@ -36,6 +36,7 @@ func getImagesPathStr(imagesDirPath string) ([]string, error) {
 	if err != nil{
 		return nil, errors.WithStack(err)
 	}
+	defer workingDir.Close()
 	files, err := workingDir.ReadDir(0)
 	switch {
 	case err != nil:
@@ -45,13 +46,14 @@ func getImagesPathStr(imagesDirPath string) ([]string, error) {
 	}
 	
 	var result []string
+	
+	sort.Slice(files, func(i, j int) bool {
+		return prepareFileNameForSort(files[i].Name()) < prepareFileNameForSort(files[j].Name())
+	})
+
 	for _, file := range files {
 		result = append(result, fmt.Sprintf("%s/%s", imagesDirPath, file.Name()))
 	}
-
-	sort.Slice(result, func(i, j int) bool {
-		return prepareFileNameForSort(result[i]) < prepareFileNameForSort(result[j])
-	})
 
 	return result, nil
 }
