@@ -18,6 +18,9 @@ type Configs struct {
 	Envs []Env `yaml:"env"`
 }
 
+// название файла, если "ENV_FILE_NAME" c секретами и прочими ENV переменными пустой
+const defaultEnvFileName = "values_local.yaml"
+
 var (
 	used bool = false
 	currentFileDir string
@@ -31,12 +34,18 @@ func init() {
 }
 
 func InitServiceFlags() {
+	// считываем название файла, которое находится в пакете flags, откуда мы достаем секреты и другие env переменные
+	// недопустимо использовать другое расположение файла
+	envFileName := os.Getenv("ENV_FILE_NAME")
+	if envFileName == "" {
+		envFileName = defaultEnvFileName
+	}
 	if used {
 		fmt.Println("flags init has been used")
 		return
 	}
 	var yamlResult Configs
-	yamlData, err := os.ReadFile(currentFileDir + "/values_local.yaml")
+	yamlData, err := os.ReadFile(currentFileDir + "/" + envFileName)
 	if err != nil {
 		panic(err)
 	}
