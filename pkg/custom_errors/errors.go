@@ -11,4 +11,7 @@ var (
 
 	// ErrEmailsNotFound ошибка сигнализирует о том, что не было найдено email по id пользователя
 	ErrEmailsNotFound = errors.New("emails not found")
+
+	// ErrEmptyAttr ошибка говорит о том, что искомы атрибут на сайте не существует
+	ErrEmptyAttr = errors.New("attribute do not exists")
 )
