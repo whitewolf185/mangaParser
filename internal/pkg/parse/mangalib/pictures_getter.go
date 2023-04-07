@@ -52,6 +52,9 @@ func (mlb mangaLibController) GetPicsUrlInChapter(ctx context.Context, chapterUr
 func (mlb mangaLibController) getMangaName(chapterUrl string) string {
 	result := strings.ReplaceAll(chapterUrl, "https://mangalib.me/", "")
 	indexToSlice := strings.Index(result, "/")
+	if indexToSlice == -1 {
+		indexToSlice = strings.Index(result, "?")
+	}
 	return result[:indexToSlice]
 }
 
