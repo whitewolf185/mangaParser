@@ -6,11 +6,13 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	
+
+	"github.com/whitewolf185/mangaparser/internal/config/flags"
 	"github.com/whitewolf185/mangaparser/internal/pkg/parse/mangalib/mock"
 )
 
 func Test_mangaLibController_GetPicsUrlInChapter(t *testing.T) {
+	flags.InitServiceFlags()
 	ctx := context.Background()
 	type args struct {
 		chapterUrl string
@@ -44,7 +46,10 @@ func Test_mangaLibController_GetPicsUrlInChapter(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mlb := NewMangaLibController(tt.mockPrepare(ctrl))
+			mlb, err := NewMangaLibController(tt.mockPrepare(ctrl))
+			if err != nil {
+				t.Fatal(err)
+			}
 			got, err := mlb.GetPicsUrlInChapter(ctx, tt.args.chapterUrl)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("mangaLibController.GetPicsUrlInChapter() error = %v, wantErr %v", err, tt.wantErr)

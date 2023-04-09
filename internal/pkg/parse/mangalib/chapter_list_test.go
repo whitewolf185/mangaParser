@@ -6,11 +6,13 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
-	
+
+	"github.com/whitewolf185/mangaparser/internal/config/flags"
 	"github.com/whitewolf185/mangaparser/internal/pkg/parse/mangalib/mock"
 )
 
 func Test_mangaLibController_GetChapterListUrl(t *testing.T) {
+	flags.InitServiceFlags()
 	ctx := context.Background()
 	type args struct {
 		mangaID uuid.UUID
@@ -81,7 +83,10 @@ func Test_mangaLibController_GetChapterListUrl(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mlc := NewMangaLibController(tt.mockGen(ctrl))
+			mlc, err := NewMangaLibController(tt.mockGen(ctrl))
+			if err != nil {
+				t.Fatal(err)
+			}
 			got, err := mlc.GetChapterListUrl(ctx, tt.args.mangaID)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("mangaLibController.GetChapterListUrl() error = %v, wantErr %v", err, tt.wantErr)

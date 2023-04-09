@@ -14,4 +14,7 @@ var (
 
 	// ErrEmptyAttr ошибка говорит о том, что искомы атрибут на сайте не существует
 	ErrEmptyAttr = errors.New("attribute do not exists")
+
+	// ErrHttpRetry ошибка означает, что после некоторого количества ретраев достучаться до сайта не получилось
+	ErrHttpRetry = errors.New("http request retry failure")
 )

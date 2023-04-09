@@ -10,6 +10,11 @@ require (
 )
 
 require (
+	github.com/sirupsen/logrus v1.9.0
+	golang.org/x/sys v0.5.0 // indirect
+)
+
+require (
 	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect

@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"sort"
 	"strings"
 
@@ -12,22 +11,16 @@ import (
 	"github.com/pkg/errors"
 
 	customerrors "github.com/whitewolf185/mangaparser/pkg/custom_errors"
+	httprequester "github.com/whitewolf185/mangaparser/internal/pkg/parse/http_requester"
 )
+
+const imageDownloadTemplate = "https://img33.imgslib.link//manga/%s/chapters/%s/%s"
 
 // GetPicsUrlInChapter выдает список url с картинками из главы манги. Принимает url на главу манги
 func (mlb mangaLibController) GetPicsUrlInChapter(ctx context.Context, chapterUrl string) ([]string, error) {
-	res, err := http.Get(chapterUrl)
+	doc, err := httprequester.GetDOM(chapterUrl)
 	if err != nil {
-		return nil, errors.Wrap(err, "chapter http get failure")
-	}
-	defer res.Body.Close()
-	if res.StatusCode != 200 {
-		return nil, errors.Wrap(err, "chapter http get failure: status is not 200")
-	}
-
-	doc, err := goquery.NewDocumentFromReader(res.Body)
-	if err != nil {
-		return nil, errors.Wrap(err, "parsing into goquery failure")
+		return nil, errors.Wrap(err, "chapter pages")
 	}
 
 	parsedPageList, err := mlb.getPageInfo(doc)
@@ -44,27 +37,15 @@ func (mlb mangaLibController) GetPicsUrlInChapter(ctx context.Context, chapterUr
 
 	result := make([]string, 0, len(parsedPageList))
 	for _, page := range parsedPageList {
-		result = append(result, fmt.Sprintf("https://img33.imgslib.link//manga/%s/chapters/%s/%s", mangaName, chapterID, page.Url))
+		result = append(result, fmt.Sprintf(imageDownloadTemplate, mangaName, chapterID, page.Url))
 	}
 	return result, nil
-}
-
-func (mlb mangaLibController) getMangaName(chapterUrl string) string {
-	result := strings.ReplaceAll(chapterUrl, "https://mangalib.me/", "")
-	indexToSlice := strings.Index(result, "/")
-	if indexToSlice == -1 {
-		indexToSlice = strings.Index(result, "?")
-	}
-	return result[:indexToSlice]
 }
 
 func (mlb mangaLibController) getPageInfo(doc *goquery.Document) ([]pageList, error) {
 	pageInfo := doc.Find("#pg").Text()
 	pageInfo = strings.ReplaceAll(pageInfo, "window.__pg = ", "")
-	pageInfo = strings.ReplaceAll(pageInfo, "\n", "")
-	pageInfo = strings.ReplaceAll(pageInfo, "\t", "")
-	pageInfo = strings.ReplaceAll(pageInfo, " ", "")
-	pageInfo = pageInfo[:len(pageInfo)-1]
+	pageInfo = mlb.cleanScript(pageInfo)
 
 	var parsedPageList []pageList
 	err := json.Unmarshal([]byte(pageInfo), &parsedPageList)
