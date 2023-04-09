@@ -1,7 +1,6 @@
 package httprequester
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -13,37 +12,27 @@ import (
 	customerrors "github.com/whitewolf185/mangaparser/pkg/custom_errors"
 )
 
-type retrier struct {
-	currentTry int
-}
-func newRetrier () retrier {
-	return retrier{
-		currentTry: 0,
-	}
-}
+// сколько ретраев должен делать http request при 500 ошибке
+const totalRetries = 2
 
-// retryHTTPGet повторяет totalTry запрос, если ошибка != 200 и == 500
-func (r retrier) retryHTTPGet(url string, timeToSleep time.Duration, totalTry int) (*http.Response, error) {
-	if r.currentTry >= totalTry {
-		return nil, errors.Wrap(customerrors.ErrHttpRetry, fmt.Sprintf("retring failure tries %d", totalTry))
-	}
-	if r.currentTry != 0{
-		logrus.Infof("try %d", r.currentTry)
-		time.Sleep(timeToSleep)
-	}
-	res, err := http.Get(url)
-	if err != nil {
-		return nil, errors.Wrap(err, "http get failure")
-	}
-	switch {
-	case res.StatusCode >= 500 && res.StatusCode < 600:
-		r.currentTry++
-		return r.retryHTTPGet(url, timeToSleep, totalTry)
-	case res.StatusCode != 200:
-		return nil, errors.Wrapf(err, "chapter list http get failure: status is %d", res.StatusCode)
+// getResponse повторяет totalTry запрос, если ошибка != 200 и == 500
+func getResponse(url string, timeToSleep time.Duration) (*http.Response, error) {
+	for currentTry := 0; currentTry < totalRetries; currentTry++ {
+		res, err := http.Get(url)
+		if err != nil {
+			return nil, errors.Wrap(err, "http get failure")
+		}
+		
+		switch {
+		case res.StatusCode >= 500 && res.StatusCode < 600:
+			logrus.Infof("try %d", currentTry+1)
+			time.Sleep(timeToSleep)
+		case res.StatusCode == http.StatusOK:
+			return res, nil
+		}
 	}
 
-	return res, nil
+	return nil, errors.Wrapf(customerrors.ErrHttpRetry, "tries %d", totalRetries)
 }
 
 // GetDOM получает подготовленное DOM дерево при помощи получения сайта из приходящей ссылки
@@ -52,8 +41,7 @@ func GetDOM(url string) (*goquery.Document, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "retry duration parsing failure")
 	}
-	retrier := newRetrier()
-	res, err := retrier.retryHTTPGet(url, timeToSleep, 2)
+	res, err := getResponse(url, timeToSleep)
 	if err != nil{
 		return nil, errors.WithStack(err)
 	}
