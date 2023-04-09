@@ -1,6 +1,7 @@
 package httprequester
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -13,11 +14,21 @@ import (
 )
 
 // сколько ретраев должен делать http request при 500 ошибке
-const totalRetries = 2
+const totalRetriesDefault = 2
 
 // getResponse повторяет totalTry запрос, если ошибка != 200 и == 500
-func getResponse(url string, timeToSleep time.Duration) (*http.Response, error) {
-	for currentTry := 0; currentTry < totalRetries; currentTry++ {
+func getResponse(url string, timeToSleep time.Duration, totalRetries ...int) (*http.Response, error) {
+	var totalRetry int
+	switch len(totalRetries) {
+	case 0:
+		totalRetry = totalRetriesDefault
+	case 1:
+		totalRetry = totalRetries[0]
+	default:
+		return nil, fmt.Errorf("more than one optional argument")
+	}
+	
+	for currentTry := 0; currentTry < totalRetry; currentTry++ {
 		res, err := http.Get(url)
 		if err != nil {
 			return nil, errors.Wrap(err, "http get failure")
