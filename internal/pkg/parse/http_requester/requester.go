@@ -13,13 +13,22 @@ import (
 	customerrors "github.com/whitewolf185/mangaparser/pkg/custom_errors"
 )
 
+type retrier struct {
+	currentTry int
+}
+func newRetrier () retrier {
+	return retrier{
+		currentTry: 0,
+	}
+}
+
 // retryHTTPGet повторяет totalTry запрос, если ошибка != 200 и == 500
-func retryHTTPGet(url string, timeToSleep time.Duration, currentTry, totalTry int) (*http.Response, error) {
-	if currentTry >= totalTry {
+func (r retrier) retryHTTPGet(url string, timeToSleep time.Duration, totalTry int) (*http.Response, error) {
+	if r.currentTry >= totalTry {
 		return nil, errors.Wrap(customerrors.ErrHttpRetry, fmt.Sprintf("retring failure tries %d", totalTry))
 	}
-	if currentTry != 0{
-		logrus.Infof("try %d", currentTry)
+	if r.currentTry != 0{
+		logrus.Infof("try %d", r.currentTry)
 		time.Sleep(timeToSleep)
 	}
 	res, err := http.Get(url)
@@ -28,7 +37,8 @@ func retryHTTPGet(url string, timeToSleep time.Duration, currentTry, totalTry in
 	}
 	switch {
 	case res.StatusCode >= 500 && res.StatusCode < 600:
-		return retryHTTPGet(url, timeToSleep, currentTry+1, totalTry)
+		r.currentTry++
+		return r.retryHTTPGet(url, timeToSleep, totalTry)
 	case res.StatusCode != 200:
 		return nil, errors.Wrapf(err, "chapter list http get failure: status is %d", res.StatusCode)
 	}
@@ -42,7 +52,8 @@ func GetDOM(url string) (*goquery.Document, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "retry duration parsing failure")
 	}
-	res, err := retryHTTPGet(url, timeToSleep, 0, 2)
+	retrier := newRetrier()
+	res, err := retrier.retryHTTPGet(url, timeToSleep, 2)
 	if err != nil{
 		return nil, errors.WithStack(err)
 	}
