@@ -41,7 +41,7 @@ func (mlc mangaLibController) cleanScript(scriptStr string) string {
 	return tmpStr[:len(tmpStr)-1]
 }
 
-func (mlb mangaLibController) getMangaName(chapterUrl string) string {
+func (mlс mangaLibController) getMangaName(chapterUrl string) string {
 	result := strings.ReplaceAll(chapterUrl, mangalibHost, "")
 	indexToSlice := strings.Index(result, "/")
 	if indexToSlice == -1 {
