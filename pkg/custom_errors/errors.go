@@ -8,9 +8,10 @@ var (
 	// ErrEmptyStr ошибка сигнализирует о том, что пришеджая в функцию строка пустая
 	ErrEmptyStr = errors.New("empty string input")
 
-
 	// ErrEmailsNotFound ошибка сигнализирует о том, что не было найдено email по id пользователя
 	ErrEmailsNotFound = errors.New("emails not found")
+	// ErrUrlNotFound ошибка сигнализирует о том, что не было найдено url для манги
+	ErrUrlNotFound = errors.New("no url for manga found")
 
 	// ErrEmptyAttr ошибка говорит о том, что искомы атрибут на сайте не существует
 	ErrEmptyAttr = errors.New("attribute do not exists")
