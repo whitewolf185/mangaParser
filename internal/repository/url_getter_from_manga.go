@@ -36,11 +36,11 @@ func (ur urlRepo) GetUrlByID(ctx context.Context, mangaID uuid.UUID, sourceType 
 	err := ur.db.QueryRow(ctx, stmt, args...).Scan(&url)
 	switch {
 	case errors.Is(err, pgx.ErrNoRows):
-		return "", errors.Wrap(customerrors.ErrUrlNotFound, fmt.Sprintf("manga not found ID = %s", mangaID.String()))
+		return "", errors.Wrap(customerrors.ErrUrlIsEmpty, fmt.Sprintf("manga not found ID = %s", mangaID.String()))
 	case err != nil:
 		return "", err
 	case url == "":
-		return "", errors.Wrap(customerrors.ErrUrlNotFound, fmt.Sprintf("manga ID = %s", mangaID.String()))
+		return "", errors.Wrap(customerrors.ErrUrlIsEmpty, fmt.Sprintf("manga ID = %s", mangaID.String()))
 	}
 
 	return url, nil

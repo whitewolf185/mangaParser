@@ -75,7 +75,7 @@ func Test_urlRepo_GetUrlByID(t *testing.T) {
 				mangaID:    uuid.New(),
 				sourceType: config.MangaLib,
 			},
-			wantErr: customerrors.ErrUrlNotFound,
+			wantErr: customerrors.ErrUrlIsEmpty,
 		},
 		{
 			name: "url is empty",
@@ -110,7 +110,7 @@ func Test_urlRepo_GetUrlByID(t *testing.T) {
 				sourceType: config.MangaLib,
 			},
 			want:    "",
-			wantErr: customerrors.ErrUrlNotFound,
+			wantErr: customerrors.ErrUrlIsEmpty,
 		},
 	}
 	for _, tt := range tests {
