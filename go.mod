@@ -9,6 +9,8 @@ require (
 	github.com/pkg/errors v0.9.1
 )
 
+require github.com/go-chi/chi/v5 v5.0.8 // indirect
+
 require (
 	github.com/sirupsen/logrus v1.9.0
 	golang.org/x/sys v0.5.0 // indirect
@@ -34,6 +36,7 @@ require (
 )
 
 require (
+	github.com/go-chi/chi v1.5.4
 	github.com/google/uuid v1.3.0
 	github.com/hhrutter/lzw v0.0.0-20190829144645-6f07a24e8650 // indirect
 	github.com/hhrutter/tiff v0.0.0-20190829141212-736cae8d0bc7 // indirect

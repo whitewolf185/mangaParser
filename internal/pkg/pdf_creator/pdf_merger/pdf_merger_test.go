@@ -36,13 +36,13 @@ func Test_getImagesPathStr(t *testing.T) {
 			imagesDirPath: emptyDirPath,
 			prepare: func() {
 				err := os.Mkdir(emptyDirPath, os.ModePerm)
-				if err != nil{
+				if err != nil {
 					t.Fatal(err)
 				}
 			},
 			cleanUp: func() {
 				err := os.RemoveAll(emptyDirPath)
-				if err != nil{
+				if err != nil {
 					t.Fatal(err)
 				}
 			},
@@ -58,7 +58,7 @@ func Test_getImagesPathStr(t *testing.T) {
 			if tt.cleanUp != nil {
 				t.Cleanup(tt.cleanUp)
 			}
-			got, err := getImagesPathStr(tt.imagesDirPath)
+			got, err := GetImagesPathStr(tt.imagesDirPath)
 			if !errors.Is(err, tt.wantErr) {
 				t.Errorf("getImagesPathStr() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -85,9 +85,9 @@ func TestCreatePDFFromImagesDir(t *testing.T) {
 			name: "all good",
 			args: args{
 				imagesDirPath: "imgs_1test",
-				outputPath: "out.pdf",
+				outputPath:    "out.pdf",
 			},
-			cleanUp: func(){
+			cleanUp: func() {
 				os.RemoveAll("out.pdf")
 			},
 		},
@@ -100,7 +100,9 @@ func TestCreatePDFFromImagesDir(t *testing.T) {
 			if _, err := os.Stat(tt.args.outputPath); err != nil {
 				t.Fatalf("out put file does not exists %s", err.Error())
 			}
-			if tt.cleanUp != nil {t.Cleanup(tt.cleanUp)}
+			if tt.cleanUp != nil {
+				t.Cleanup(tt.cleanUp)
+			}
 		})
 	}
 }
