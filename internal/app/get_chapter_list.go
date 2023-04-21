@@ -2,9 +2,7 @@ package app
 
 import (
 	"context"
-	"fmt"
 	"net/http"
-	"net/url"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -12,15 +10,14 @@ import (
 	customerrors "github.com/whitewolf185/mangaparser/pkg/custom_errors"
 )
 
-func (i *Implementation) GetChapterList(ctx context.Context, req *http.Request) (*domain.GetChapterListResponse, error) {
-	mangaURLEscaped := req.URL.Query().Get("mangaURL")
-	if mangaURLEscaped == "" {
-		return nil, customerrors.CodesBadRequest(customerrors.ErrUrlIsEmpty)
-	}
+const (
+	mangaUrlQuery = "mangaURL"
+)
 
-	mangaURL, err := url.QueryUnescape(mangaURLEscaped)
+func (i *Implementation) GetChapterList(ctx context.Context, req *http.Request) (*domain.GetChapterListResponse, error) {
+	mangaURL, err := getAndUnescapeStrFromUrlQuery(req, mangaUrlQuery)
 	if err != nil {
-		return nil, fmt.Errorf("unescape error: %w", err)
+		return nil, customerrors.CodesBadRequest(err)
 	}
 
 	if !strings.Contains(mangaURL, "chapters") {
@@ -35,6 +32,7 @@ func (i *Implementation) GetChapterList(ctx context.Context, req *http.Request) 
 	result := domain.GetChapterListResponse{
 		ChapterURLs: urls,
 		Total:       len(urls),
+		MangaName: i.mangaConfigurator.GetMangaName(mangaURL),
 	}
 
 	return &result, nil

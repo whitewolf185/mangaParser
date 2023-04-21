@@ -16,6 +16,8 @@ var (
 	ErrEmailsNotFound = errors.New("emails not found")
 	// ErrUrlIsEmpty ошибка сигнализирует о том, что не было найдено url для манги
 	ErrUrlIsEmpty = errors.New("no url for manga found")
+	// ErrWrongUrl ошибка сигнализирует о том, что ссылка не соответствует регулярным выражениям
+	ErrWrongUrl = errors.New("url does not watch reg exp")
 
 	// ErrEmptyAttr ошибка говорит о том, что искомы атрибут на сайте не существует
 	ErrEmptyAttr = errors.New("attribute do not exists")

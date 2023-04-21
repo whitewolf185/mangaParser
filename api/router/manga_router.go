@@ -13,5 +13,11 @@ func newMangaRouter(errHandler middleware.ErrHandler) chi.Router {
 	mangaRouter.Get("/GetChapterList", 
 		errHandler.ErrMiddleware(domain.GetChapterList),
 	)
+	mangaRouter.Get("/GetChapterPages", 
+		errHandler.ErrMiddleware(domain.GetChapterPages),
+	)
+	mangaRouter.Get("/GetChapterPagesPDF",
+		errHandler.ErrMiddleware(domain.GetChapterPagesPDF),
+	)
 	return mangaRouter
 }

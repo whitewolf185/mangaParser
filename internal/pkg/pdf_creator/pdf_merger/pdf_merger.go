@@ -17,7 +17,7 @@ import (
 // CreatePDFFromImagesDir создает pdf файл.
 // На вход подается путь к папке, где лежат картинки вида 1.png 2.jpg 3.tiff и путь к выходному pdf файлу
 func CreatePDFFromImagesDir(imagesDirPath string, outputPath string) error {
-	imagesPath, err := getImagesPathStr(imagesDirPath)
+	imagesPath, err := GetImagesPathStr(imagesDirPath)
 	if err != nil {
 		return errors.Wrap(err, "something wrong with creating images path")
 	}
@@ -28,12 +28,14 @@ func CreatePDFFromImagesDir(imagesDirPath string, outputPath string) error {
 	return nil
 }
 
-func getImagesPathStr(imagesDirPath string) ([]string, error) {
+// GetImagesPathStr функция выдает отсортированный правильно массив путей к файлам, куда скачались картинки.
+// Например, если imagesDirPath = ./data, и файлы там: 1.png, 2.png, то вернется ["./data/1.png", "./data/2.png"]
+func GetImagesPathStr(imagesDirPath string) ([]string, error) {
 	if imagesDirPath == "" {
 		return nil, errors.Wrap(customerrors.ErrEmptyStr, "countFilesInDir")
 	}
 	workingDir, err := os.Open(imagesDirPath)
-	if err != nil{
+	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 	defer workingDir.Close()
@@ -44,9 +46,9 @@ func getImagesPathStr(imagesDirPath string) ([]string, error) {
 	case len(files) == 0:
 		return nil, errors.Wrap(customerrors.ErrEmptyDir, "countFilesInDir")
 	}
-	
+
 	var result []string
-	
+
 	sort.Slice(files, func(i, j int) bool {
 		return prepareFileNameForSort(files[i].Name()) < prepareFileNameForSort(files[j].Name())
 	})
@@ -62,14 +64,14 @@ func getImagesPathStr(imagesDirPath string) ([]string, error) {
 // Например, обычно file1.ext < file12.ext < file2.ext, но с помощью функции теперь file1.ext < file2.ext < file12.ext.
 // Функция паникует, если на вход приходит файл вида file12dtf.ext (после цифр есть буквы)
 func prepareFileNameForSort(filename string) int {
-    ext := filepath.Ext(filename)
-    name := filename[:len(filename)-len(ext)]
-    
+	ext := filepath.Ext(filename)
+	name := filename[:len(filename)-len(ext)]
+
 	index := strings.IndexAny(name, "0123456789")
 	result, err := strconv.Atoi(name[index:])
 	if err != nil {
 		panic(err)
 	}
-    
-    return result
+
+	return result
 }

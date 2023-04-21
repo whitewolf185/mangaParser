@@ -21,7 +21,7 @@ func NewImageGetter() imageGetter {
 	return imageGetter{}
 }
 
-const formatToSaveFile = "%s/img%d.%s"
+const formatToSaveFile = "%s/img%d%s"
 
 // GetImageAndSave достает картинку по ссылке и пишет ее в канал в асинхронном режиме
 func (ig imageGetter) GetImageAndSave(

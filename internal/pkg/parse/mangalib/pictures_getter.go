@@ -10,8 +10,8 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/pkg/errors"
 
-	customerrors "github.com/whitewolf185/mangaparser/pkg/custom_errors"
 	httprequester "github.com/whitewolf185/mangaparser/internal/pkg/parse/http_requester"
+	customerrors "github.com/whitewolf185/mangaparser/pkg/custom_errors"
 )
 
 const imageDownloadTemplate = "https://img33.imgslib.link//manga/%s/chapters/%s/%s"
@@ -33,7 +33,7 @@ func (mlс mangaLibController) GetPicsUrlInChapter(ctx context.Context, chapterU
 		return nil, errors.WithStack(err)
 	}
 
-	mangaName := mlс.getMangaName(chapterUrl)
+	mangaName := mlс.GetMangaName(chapterUrl)
 
 	result := make([]string, 0, len(parsedPageList))
 	for _, page := range parsedPageList {
@@ -67,4 +67,3 @@ func (mlb mangaLibController) getChapterID(doc *goquery.Document) (string, error
 	}
 	return result, nil
 }
-

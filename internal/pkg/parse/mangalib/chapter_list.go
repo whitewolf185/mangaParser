@@ -45,7 +45,7 @@ func (mlc mangaLibController) GetChapterListUrlByMangaUrl(ctx context.Context, m
 		return nil, errors.Wrap(err, "chapter list")
 	}
 
-	mangaName := mlc.getMangaName(mainMangaUrl)
+	mangaName := mlc.GetMangaName(mainMangaUrl)
 	chapterList, err := mlc.getChapterListFromBody(doc)
 	if err != nil {
 		return nil, errors.Wrap(err, "getting chapter list failure")

@@ -8,13 +8,13 @@ import (
 )
 
 const (
-	mangalibHost = "https://mangalib.me/"
+	mangalibHost         = "https://mangalib.me/"
 	regexpCompilePattern = `[\s]`
 )
 
 // структура управления получения ссылок на картинки из mangalib
 type mangaLibController struct {
-	urlGetter UrlGetter
+	urlGetter           UrlGetter
 	regExpScriptCleaner *regexp.Regexp
 }
 
@@ -25,15 +25,15 @@ func NewMangaLibController(urlGetter UrlGetter) (mangaLibController, error) {
 		return mangaLibController{}, errors.Wrap(err, "regexp compile failure")
 	}
 	return mangaLibController{
-		urlGetter: urlGetter,
+		urlGetter:           urlGetter,
 		regExpScriptCleaner: r,
 	}, nil
 }
 
 // структура, которая используется для парсинга данных об имеющихся картинках в главе для получения ссылок на них
 type pageList struct {
-	Page int `json:"p"`
-	Url string `json:"u"`
+	Page int    `json:"p"`
+	Url  string `json:"u"`
 }
 
 func (mlc mangaLibController) cleanScript(scriptStr string) string {
@@ -41,7 +41,7 @@ func (mlc mangaLibController) cleanScript(scriptStr string) string {
 	return tmpStr[:len(tmpStr)-1]
 }
 
-func (mlс mangaLibController) getMangaName(chapterUrl string) string {
+func (mlс mangaLibController) GetMangaName(chapterUrl string) string {
 	result := strings.ReplaceAll(chapterUrl, mangalibHost, "")
 	indexToSlice := strings.Index(result, "/")
 	if indexToSlice == -1 {
