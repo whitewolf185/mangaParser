@@ -17,7 +17,7 @@ import (
 
 const (
 	chapterUrlQuery = "chapterURL"
-	personIDQuery = "personID"
+	personIDQuery   = "personID"
 )
 
 func (i *Implementation) GetChapterPages(ctx context.Context, req *http.Request) (*domain.GetChapterPagesResponse, error) {
@@ -35,7 +35,7 @@ func (i *Implementation) GetChapterPages(ctx context.Context, req *http.Request)
 	if err != nil {
 		return nil, customerrors.CodesBadRequest(err)
 	}
-	
+
 	// Начинаем заполнять результат
 	var result domain.GetChapterPagesResponse
 	// получим название манги
@@ -68,7 +68,7 @@ func (i *Implementation) GetChapterPages(ctx context.Context, req *http.Request)
 			return nil, errors.Wrapf(err, "get bytes failed on %d iteration", iteration)
 		}
 		result.Pages = append(result.Pages, domain.ImageBody{
-			Image: img,
+			Images:   img,
 			FileName: filepath.Base(path),
 		})
 	}

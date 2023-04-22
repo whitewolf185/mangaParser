@@ -8,7 +8,8 @@ import (
 	"regexp"
 
 	"github.com/pkg/errors"
-	
+
+	"github.com/whitewolf185/mangaparser/api/domain"
 	customerrors "github.com/whitewolf185/mangaparser/pkg/custom_errors"
 )
 
@@ -28,6 +29,15 @@ type (
 		// GetImagesFromURLs скачивание картинок из url
 		GetImagesFromURLs(ctx context.Context, folderPathToSave string, urlImages []string) error
 	}
+
+	// интерфейс для отправки манги на электронную книгу
+	EbookSender interface {
+		SendManga(ctx context.Context, email string, mangaFilePath string) error
+	}
+
+	PersonRepo interface {
+		GetEmailByID(ctx context.Context, person domain.PersonInfo) (string, error)
+	}
 )
 
 const regexpChapterCheckerPattern = `https://[a-z\.]+/[a-zA-Z\-\_]+/v[\d\.]/c[\d\.]+\?*`
@@ -36,12 +46,18 @@ const regexpChapterCheckerPattern = `https://[a-z\.]+/[a-zA-Z\-\_]+/v[\d\.]/c[\d
 type Implementation struct {
 	mangaConfigurator MangaConfigurator
 	imageController ImageController
+	ebookSender EbookSender
+	personRepo PersonRepo
 
 	chapterChecker *regexp.Regexp
 }
 
 // NewImplementation конструктор для Implementation
-func NewImplementation(mangaConfigurator MangaConfigurator, imageController ImageController) (*Implementation, error) {
+func NewImplementation(
+	mangaConfigurator MangaConfigurator,
+	imageController ImageController,
+	ebookSender EbookSender,
+	personRepo PersonRepo) (*Implementation, error) {
 	r, err := regexp.Compile(regexpChapterCheckerPattern)
 	if err != nil {
 		return nil, errors.Wrap(err, "regexp compile failure")
@@ -49,6 +65,8 @@ func NewImplementation(mangaConfigurator MangaConfigurator, imageController Imag
 	return &Implementation{
 		mangaConfigurator: mangaConfigurator,
 		imageController: imageController,
+		ebookSender: ebookSender,
+		personRepo: personRepo,
 		chapterChecker: r,
 	}, nil
 }

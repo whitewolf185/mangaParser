@@ -19,5 +19,8 @@ func newMangaRouter(errHandler middleware.ErrHandler) chi.Router {
 	mangaRouter.Get("/GetChapterPagesPDF",
 		errHandler.ErrMiddleware(domain.GetChapterPagesPDF),
 	)
+	mangaRouter.Post("/SendToEbook",
+		errHandler.ErrMiddleware(domain.SendToEbook),
+	)
 	return mangaRouter
 }

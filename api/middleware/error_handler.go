@@ -63,6 +63,7 @@ func (em ErrHandler) checkExclusiveFiles(res interface{}, w http.ResponseWriter,
 
 	switch value := res.(type) {
 	case *domain.GetChapterPagesPDFResponse:
+		defer os.RemoveAll(value.PdfPath)
 		w.Header().Add("Content-Type", "application/pdf")
 		f, err := os.Open(value.PdfPath)
 		if err != nil {
@@ -99,6 +100,8 @@ func (em ErrHandler) handleTypeSwitcher(ctx context.Context, r *http.Request, ha
 		return em.mangaHandler.GetChapterPages(ctx, r)
 	case domain.GetChapterPagesPDF:
 		return em.mangaHandler.GetChapterPagesPDF(ctx, r)
+	case domain.SendToEbook:
+		return em.mangaHandler.SendToEbook(ctx, r)
 	}
 	return nil, customerrors.ErrUnknownType
 }

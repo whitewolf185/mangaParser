@@ -3,35 +3,28 @@ package mailer
 import (
 	"context"
 
-	"github.com/google/uuid"
 	"github.com/pkg/errors"
-	"github.com/whitewolf185/mangaparser/internal/config"
 	"gopkg.in/gomail.v2"
-)
 
-//go:generate mockgen -destination=./mock/email_getter_mock.go -package=mock github.com/whitewolf185/mangaparser/internal/pkg/mailer EmailGetter
-type EmailGetter interface {
-	GetEmailByID(ctx context.Context, personID uuid.UUID) (string, error)
-}
+	"github.com/whitewolf185/mangaparser/internal/config"
+	customerrors "github.com/whitewolf185/mangaparser/pkg/custom_errors"
+)
 
 type EbookMailer struct{
 	smtpServer string
 	smtpPort int
-	adressGetter EmailGetter
 }
 
-func NewEbookMailer(adressGetter EmailGetter) EbookMailer {
+func NewEbookMailer() EbookMailer {
 	return EbookMailer{
 		smtpServer: "smtp.mail.ru",
 		smtpPort: 465,
-		adressGetter: adressGetter,
 	}
 }
 
-func (em EbookMailer) SendManga(ctx context.Context, personID uuid.UUID, mangaFilePath string) error {
-	toEmailAdress, err := em.adressGetter.GetEmailByID(ctx, personID)
-	if err != nil{
-		return errors.Wrap(err, "failred to get email adress from db")
+func (em EbookMailer) SendManga(ctx context.Context, toEmailAdress string, mangaFilePath string) error {
+	if toEmailAdress == "" {
+		return customerrors.ErrEmailsNotFound
 	}
 
 	message := gomail.NewMessage()

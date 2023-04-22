@@ -19,7 +19,7 @@ type personsTable struct {
 	//Columns
 	ID         postgres.ColumnString
 	Email      postgres.ColumnString
-	TelegramID postgres.ColumnString
+	TelegramID postgres.ColumnInteger
 
 	AllColumns     postgres.ColumnList
 	MutableColumns postgres.ColumnList
@@ -62,7 +62,7 @@ func newPersonsTableImpl(schemaName, tableName, alias string) personsTable {
 	var (
 		IDColumn         = postgres.StringColumn("id")
 		EmailColumn      = postgres.StringColumn("email")
-		TelegramIDColumn = postgres.StringColumn("telegram_id")
+		TelegramIDColumn = postgres.IntegerColumn("telegram_id")
 		allColumns       = postgres.ColumnList{IDColumn, EmailColumn, TelegramIDColumn}
 		mutableColumns   = postgres.ColumnList{EmailColumn, TelegramIDColumn}
 	)

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/sirupsen/logrus"
@@ -12,6 +11,7 @@ import (
 	"github.com/whitewolf185/mangaparser/internal/app"
 	"github.com/whitewolf185/mangaparser/internal/config"
 	"github.com/whitewolf185/mangaparser/internal/config/flags"
+	"github.com/whitewolf185/mangaparser/internal/pkg/mailer"
 	"github.com/whitewolf185/mangaparser/internal/pkg/parse/mangalib"
 	"github.com/whitewolf185/mangaparser/internal/pkg/pdf_creator"
 	"github.com/whitewolf185/mangaparser/internal/repository"
@@ -25,6 +25,7 @@ func main() {
 		logrus.Fatalln("cannot connect to postgresql ", err)
 	}
 
+	// подготавливаем разные структуры
 	urlGetter := repository.NewUrlRepo(db)
 	mangalibController, err := mangalib.NewMangaLibController(urlGetter)
 	if err != nil {
@@ -35,13 +36,18 @@ func main() {
 	imageGetter := pdf_creator.NewImageGetter()
 	imageController := pdf_creator.NewImageController(imageGetter)
 
-	application, err := app.NewImplementation(mangalibController, imageController)
+	ebookSender := mailer.NewEbookMailer()
+
+	personRepo := repository.NewPersonController(db)
+	
+	// Имплементация API
+	application, err := app.NewImplementation(mangalibController, imageController, ebookSender, personRepo)
 	if err != nil {
 		logrus.Fatalln("cannot configure implementation")
 	}
 
 	root := router.NewRouter(middleware.NewErrorHandler(application))
 
-	fmt.Println("app successfully started")
+	logrus.Info("app successfully started")
 	http.ListenAndServe(":"+config.GetValue(config.ListenPort), root)
 }

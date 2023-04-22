@@ -14,5 +14,5 @@ import (
 type Persons struct {
 	ID         uuid.UUID `sql:"primary_key"`
 	Email      *string
-	TelegramID *string
+	TelegramID *int64
 }

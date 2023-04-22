@@ -3,7 +3,7 @@
 CREATE TABLE persons (
     id uuid PRIMARY KEY NOT NULL,
     email text,
-    telegram_id text
+    telegram_id bigint
 );
 
 CREATE TYPE manga_source_type AS ENUM ('mangalib', 'mangadex');
