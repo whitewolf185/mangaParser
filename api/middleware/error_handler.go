@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-	"fmt"
 	"os"
 	"time"
 
@@ -96,7 +95,6 @@ func (em ErrHandler) checkExclusiveFiles(res interface{}, w http.ResponseWriter,
 
 func (em ErrHandler) handleTypeSwitcher(ctx context.Context, r *http.Request, handleType domain.HandlerType) (interface{}, error) {
 	inputQuery := ctx.Value(httpin.Input)
-	fmt.Printf("--------------\n%v\n--------------", inputQuery)
 	switch handleType {
 	case domain.GetChapterList:
 		if inputQuery == nil {

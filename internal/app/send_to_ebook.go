@@ -17,7 +17,7 @@ import (
 
 // SendToEbook sending manga to ebook
 // @Tags manga
-// @Description различные взаимодействия с мангой
+// @Description Отправка манги на электронную книгу. (Требуется регистрация)
 // @ID manga-controller
 // @Accept json
 // @Produce json

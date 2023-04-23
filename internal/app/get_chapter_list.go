@@ -11,7 +11,7 @@ import (
 )
 
 // @Tags manga
-// @Description получения ссылок на главы манги. На вход подается ссылка на мангу с секцией chaptets. Например, https%3A%2F%2Fmangalib.me%2Fo-ju-yesuyeo%3Fsection%3Dchapters
+// @Description Получения ссылок на главы манги. На вход подается ссылка на мангу с секцией chaptets. Обязательно ссылку надо прогнать через url encoder, например https://www.urlencoder.org/. На выходе должна получиться ссылка вида, https%3A%2F%2Fmangalib.me%2Fo-ju-yesuyeo%3Fsection%3Dchapters
 // @ID manga-get-chapter-list
 // @Accept json
 // @Produce json

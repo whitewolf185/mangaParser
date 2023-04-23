@@ -15,7 +15,7 @@ import (
 )
 
 // @Tags manga
-// @Description получения массива байт картинок с метаданными
+// @Description Получения массива байт картинок с метаданными
 // @ID manga-get-chapter-pages
 // @Accept json
 // @Produce json

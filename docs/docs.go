@@ -18,7 +18,7 @@ const docTemplate = `{
     "paths": {
         "/manga/GetChapterList": {
             "get": {
-                "description": "получения ссылок на главы манги. На вход подается ссылка на мангу с секцией chaptets. Например, https%3A%2F%2Fmangalib.me%2Fo-ju-yesuyeo%3Fsection%3Dchapters",
+                "description": "Получения ссылок на главы манги. На вход подается ссылка на мангу с секцией chaptets. Обязательно ссылку надо прогнать через url encoder, например https://www.urlencoder.org/. На выходе должна получиться ссылка вида, https%3A%2F%2Fmangalib.me%2Fo-ju-yesuyeo%3Fsection%3Dchapters",
                 "consumes": [
                     "application/json"
                 ],
@@ -48,7 +48,7 @@ const docTemplate = `{
         },
         "/manga/GetChapterPages": {
             "get": {
-                "description": "получения массива байт картинок с метаданными",
+                "description": "Получения массива байт картинок с метаданными",
                 "consumes": [
                     "application/json"
                 ],
@@ -83,7 +83,7 @@ const docTemplate = `{
         },
         "/manga/SendToEbook": {
             "post": {
-                "description": "различные взаимодействия с мангой",
+                "description": "Отправка манги на электронную книгу. (Требуется регистрация)",
                 "consumes": [
                     "application/json"
                 ],

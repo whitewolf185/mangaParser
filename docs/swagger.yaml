@@ -63,8 +63,9 @@ paths:
     get:
       consumes:
       - application/json
-      description: получения ссылок на главы манги. На вход подается ссылка на мангу
-        с секцией chaptets. Например, https%3A%2F%2Fmangalib.me%2Fo-ju-yesuyeo%3Fsection%3Dchapters
+      description: Получения ссылок на главы манги. На вход подается ссылка на мангу
+        с секцией chaptets. Обязательно ссылку надо прогнать через url encoder, например
+        https://www.urlencoder.org/. На выходе должна получиться ссылка вида, https%3A%2F%2Fmangalib.me%2Fo-ju-yesuyeo%3Fsection%3Dchapters
       operationId: manga-get-chapter-list
       parameters:
       - in: query
@@ -83,7 +84,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: получения массива байт картинок с метаданными
+      description: Получения массива байт картинок с метаданными
       operationId: manga-get-chapter-pages
       parameters:
       - in: query
@@ -105,7 +106,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: различные взаимодействия с мангой
+      description: Отправка манги на электронную книгу. (Требуется регистрация)
       operationId: manga-controller
       parameters:
       - description: chapter url and person info
