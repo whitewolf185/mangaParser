@@ -15,6 +15,7 @@ const (
 	DbDsn         = configName("db_dsn")
 	RetryDuration = configName("http_retry_duration")
 	ListenPort    = configName("listen_port")
+	ServerIP      = configName("server_ip")
 )
 
 func GetValue(cnfg configName) string {

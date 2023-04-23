@@ -3,14 +3,12 @@ package app
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"net/url"
 	"regexp"
 
 	"github.com/pkg/errors"
 
 	"github.com/whitewolf185/mangaparser/api/domain"
-	customerrors "github.com/whitewolf185/mangaparser/pkg/custom_errors"
 )
 
 type (
@@ -71,14 +69,8 @@ func NewImplementation(
 	}, nil
 }
 
-// getAndUnescapeStrFromUrlQuery функция собирает информацию из определенного query
-func getAndUnescapeStrFromUrlQuery(req *http.Request, queryString string) (string, error) {
-	resultUnescaped := req.URL.Query().Get(queryString)
-	if resultUnescaped == "" {
-		return "", customerrors.ErrUrlIsEmpty
-	}
-
-	result, err := url.QueryUnescape(resultUnescaped)
+func unescapeUrl(escapedUrl string) (string, error) {
+	result, err := url.QueryUnescape(escapedUrl)
 	if err != nil {
 		return "", fmt.Errorf("unescape error: %w", err)
 	}

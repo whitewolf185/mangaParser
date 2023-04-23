@@ -1,0 +1,126 @@
+basePath: /api
+definitions:
+  domain.GetChapterListResponse:
+    properties:
+      chapter_urls:
+        items:
+          type: string
+        type: array
+      manga_name:
+        type: string
+      total:
+        type: integer
+    type: object
+  domain.GetChapterPagesResponse:
+    properties:
+      manga_name:
+        type: string
+      pages:
+        items:
+          $ref: '#/definitions/domain.ImageBody'
+        type: array
+      total:
+        type: integer
+    type: object
+  domain.ImageBody:
+    properties:
+      file_name:
+        type: string
+      images:
+        items:
+          type: integer
+        type: array
+    type: object
+  domain.PersonInfo:
+    properties:
+      person_id:
+        type: string
+      telegram_id:
+        type: integer
+    type: object
+  domain.SendToEbookRequest:
+    properties:
+      chapter_url:
+        type: string
+      person:
+        $ref: '#/definitions/domain.PersonInfo'
+    type: object
+  domain.SendToEbookResponse:
+    properties:
+      manga_name:
+        type: string
+      total_pages:
+        type: integer
+    type: object
+host: matvey-inc
+info:
+  contact: {}
+  description: swagger для api к мангапарсеру
+  title: Manga parser
+  version: '@0.9'
+paths:
+  /manga/GetChapterList:
+    get:
+      consumes:
+      - application/json
+      description: получения ссылок на главы манги. На вход подается ссылка на мангу
+        с секцией chaptets. Например, https%3A%2F%2Fmangalib.me%2Fo-ju-yesuyeo%3Fsection%3Dchapters
+      operationId: manga-get-chapter-list
+      parameters:
+      - in: query
+        name: manga_url
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.GetChapterListResponse'
+      tags:
+      - manga
+  /manga/GetChapterPages:
+    get:
+      consumes:
+      - application/json
+      description: получения массива байт картинок с метаданными
+      operationId: manga-get-chapter-pages
+      parameters:
+      - in: query
+        name: chapter_url
+        type: string
+      - in: query
+        name: person_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.GetChapterPagesResponse'
+      tags:
+      - manga
+  /manga/SendToEbook:
+    post:
+      consumes:
+      - application/json
+      description: различные взаимодействия с мангой
+      operationId: manga-controller
+      parameters:
+      - description: chapter url and person info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.SendToEbookRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.SendToEbookResponse'
+      tags:
+      - manga
+swagger: "2.0"

@@ -15,6 +15,15 @@ import (
 	customerrors "github.com/whitewolf185/mangaparser/pkg/custom_errors"
 )
 
+// SendToEbook sending manga to ebook
+// @Tags manga
+// @Description различные взаимодействия с мангой
+// @ID manga-controller
+// @Accept json
+// @Produce json
+// @Param input body domain.SendToEbookRequest true "chapter url and person info"
+// @Success 200 {object} domain.SendToEbookResponse
+// @Router /manga/SendToEbook [post]
 func (i *Implementation) SendToEbook(ctx context.Context, req *http.Request) (*domain.SendToEbookResponse, error) {
 	// Валидируем пришедшие данные
 	defer req.Body.Close()

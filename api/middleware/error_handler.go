@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"fmt"
 	"os"
 	"time"
 
+	"github.com/ggicci/httpin"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/whitewolf185/mangaparser/api/domain"
@@ -33,7 +35,7 @@ func (em ErrHandler) ErrMiddleware(handleType domain.HandlerType) http.HandlerFu
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Method", string(handleType))
 		logrus.Infof("method: %v", handleType)
-		ctx, cancel := context.WithTimeout(context.Background(), contextDeadline)
+		ctx, cancel := context.WithTimeout(r.Context(), contextDeadline)
 		defer cancel()
 
 		res, err := em.handleTypeSwitcher(ctx, r, handleType)
@@ -93,13 +95,24 @@ func (em ErrHandler) checkExclusiveFiles(res interface{}, w http.ResponseWriter,
 }
 
 func (em ErrHandler) handleTypeSwitcher(ctx context.Context, r *http.Request, handleType domain.HandlerType) (interface{}, error) {
+	inputQuery := ctx.Value(httpin.Input)
+	fmt.Printf("--------------\n%v\n--------------", inputQuery)
 	switch handleType {
 	case domain.GetChapterList:
-		return em.mangaHandler.GetChapterList(ctx, r)
+		if inputQuery == nil {
+			return em.mangaHandler.GetChapterList(ctx, nil)
+		}
+		return em.mangaHandler.GetChapterList(ctx, inputQuery.(*domain.GetChapterListRequest))
 	case domain.GetChapterPages:
-		return em.mangaHandler.GetChapterPages(ctx, r)
+		if inputQuery == nil {
+			return em.mangaHandler.GetChapterPages(ctx, nil)	
+		}
+		return em.mangaHandler.GetChapterPages(ctx, inputQuery.(*domain.GetChapterPagesRequest))
 	case domain.GetChapterPagesPDF:
-		return em.mangaHandler.GetChapterPagesPDF(ctx, r)
+		if inputQuery == nil {
+			return em.mangaHandler.GetChapterPagesPDF(ctx, nil)
+		}
+		return em.mangaHandler.GetChapterPagesPDF(ctx, inputQuery.(*domain.GetChapterPagesRequest))
 	case domain.SendToEbook:
 		return em.mangaHandler.SendToEbook(ctx, r)
 	}

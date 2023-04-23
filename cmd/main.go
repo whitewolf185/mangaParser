@@ -17,6 +17,13 @@ import (
 	"github.com/whitewolf185/mangaparser/internal/repository"
 )
 
+// @title Manga parser
+// @version @0.9
+// @description swagger для api к мангапарсеру
+
+// @host matvey-inc
+// @basePath /api
+
 func main() {
 	ctx := context.Background()
 	flags.InitServiceFlags()

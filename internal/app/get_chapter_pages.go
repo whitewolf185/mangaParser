@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"os"
 	"path/filepath"
 
@@ -15,25 +14,31 @@ import (
 	customerrors "github.com/whitewolf185/mangaparser/pkg/custom_errors"
 )
 
-const (
-	chapterUrlQuery = "chapterURL"
-	personIDQuery   = "personID"
-)
-
-func (i *Implementation) GetChapterPages(ctx context.Context, req *http.Request) (*domain.GetChapterPagesResponse, error) {
-	// Валидируем пришедшие данные
-	chapterUrl, err := getAndUnescapeStrFromUrlQuery(req, chapterUrlQuery)
+// @Tags manga
+// @Description получения массива байт картинок с метаданными
+// @ID manga-get-chapter-pages
+// @Accept json
+// @Produce json
+// @Param input query domain.GetChapterPagesRequest true "chapter url and person id info. Chapter must be url encoded"
+// @Success 200 {object} domain.GetChapterPagesResponse
+// @Router /manga/GetChapterPages [get]
+func (i *Implementation) GetChapterPages(ctx context.Context, req *domain.GetChapterPagesRequest) (*domain.GetChapterPagesResponse, error) {
+	if req == nil {
+		return nil, customerrors.CodesBadRequest(fmt.Errorf("empty request"))
+	}
+	// unescaping url
+	chapterUrl, err := unescapeUrl(req.ChapterUrl) 
 	if err != nil {
 		return nil, customerrors.CodesBadRequest(err)
 	}
 
+	// Валидируем пришедшие данные
 	if !i.chapterChecker.Match([]byte(chapterUrl)) {
 		return nil, customerrors.CodesBadRequest(fmt.Errorf("wrong chapter url"))
 	}
 
-	personID, err := getAndUnescapeStrFromUrlQuery(req, personIDQuery)
-	if err != nil {
-		return nil, customerrors.CodesBadRequest(err)
+	if req.PersonID == "" {
+		return nil, customerrors.CodesBadRequest(fmt.Errorf("empty person ID"))
 	}
 
 	// Начинаем заполнять результат
@@ -46,7 +51,7 @@ func (i *Implementation) GetChapterPages(ctx context.Context, req *http.Request)
 		return nil, errors.Wrapf(err, "cannot get pages url for manga %s", result.MangaName)
 	}
 
-	preparedPathToDownload := fmt.Sprintf(config.ParentPathToDownloadPattern, personID, result.MangaName)
+	preparedPathToDownload := fmt.Sprintf(config.ParentPathToDownloadPattern, req.PersonID, result.MangaName)
 
 	err = i.imageController.GetImagesFromURLs(ctx, preparedPathToDownload, pageUrls)
 	if err != nil {

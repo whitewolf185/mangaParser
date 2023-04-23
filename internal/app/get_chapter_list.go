@@ -2,7 +2,7 @@ package app
 
 import (
 	"context"
-	"net/http"
+	"fmt"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -10,12 +10,20 @@ import (
 	customerrors "github.com/whitewolf185/mangaparser/pkg/custom_errors"
 )
 
-const (
-	mangaUrlQuery = "mangaURL"
-)
-
-func (i *Implementation) GetChapterList(ctx context.Context, req *http.Request) (*domain.GetChapterListResponse, error) {
-	mangaURL, err := getAndUnescapeStrFromUrlQuery(req, mangaUrlQuery)
+// @Tags manga
+// @Description получения ссылок на главы манги. На вход подается ссылка на мангу с секцией chaptets. Например, https%3A%2F%2Fmangalib.me%2Fo-ju-yesuyeo%3Fsection%3Dchapters
+// @ID manga-get-chapter-list
+// @Accept json
+// @Produce json
+// @Param input query domain.GetChapterListRequest true "manga url with chapters section. Url must be escaped"
+// @Success 200 {object} domain.GetChapterListResponse
+// @Router /manga/GetChapterList [get]
+func (i *Implementation) GetChapterList(ctx context.Context, req *domain.GetChapterListRequest) (*domain.GetChapterListResponse, error) {
+	if req == nil {
+		return nil, customerrors.CodesBadRequest(fmt.Errorf("empty request"))
+	}
+	
+	mangaURL, err := unescapeUrl(req.MangaUrl)
 	if err != nil {
 		return nil, customerrors.CodesBadRequest(err)
 	}

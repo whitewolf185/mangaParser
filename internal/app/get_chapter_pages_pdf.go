@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"os"
 
 	"github.com/pkg/errors"
@@ -14,20 +13,23 @@ import (
 	customerrors "github.com/whitewolf185/mangaparser/pkg/custom_errors"
 )
 
-func (i *Implementation) GetChapterPagesPDF(ctx context.Context, req *http.Request) (*domain.GetChapterPagesPDFResponse, error) {
-	// Валидируем пришедшие данные
-	chapterUrl, err := getAndUnescapeStrFromUrlQuery(req, chapterUrlQuery)
+func (i *Implementation) GetChapterPagesPDF(ctx context.Context, req *domain.GetChapterPagesRequest) (*domain.GetChapterPagesPDFResponse, error) {
+	if req == nil {
+		return nil, customerrors.CodesBadRequest(fmt.Errorf("empty request"))
+	}
+	// unescaping url
+	chapterUrl, err := unescapeUrl(req.ChapterUrl) 
 	if err != nil {
 		return nil, customerrors.CodesBadRequest(err)
 	}
 
+	// Валидируем пришедшие данные
 	if !i.chapterChecker.Match([]byte(chapterUrl)) {
 		return nil, customerrors.CodesBadRequest(fmt.Errorf("wrong chapter url"))
 	}
 
-	personID, err := getAndUnescapeStrFromUrlQuery(req, personIDQuery)
-	if err != nil {
-		return nil, customerrors.CodesBadRequest(err)
+	if req.PersonID == "" {
+		return nil, customerrors.CodesBadRequest(fmt.Errorf("empty person ID"))
 	}
 	
 	// Начинаем заполнять результат 
@@ -39,7 +41,7 @@ func (i *Implementation) GetChapterPagesPDF(ctx context.Context, req *http.Reque
 		return nil, errors.Wrapf(err, "cannot get pages url for manga %s", mangaName)
 	}
 
-	preparedPathToDownload := fmt.Sprintf(config.ParentPathToDownloadPattern, personID, mangaName)
+	preparedPathToDownload := fmt.Sprintf(config.ParentPathToDownloadPattern, req.PersonID, mangaName)
 
 	err = i.imageController.GetImagesFromURLs(ctx, preparedPathToDownload, pageUrls)
 	if err != nil {
@@ -47,7 +49,7 @@ func (i *Implementation) GetChapterPagesPDF(ctx context.Context, req *http.Reque
 	}
 
 	// создаем папку, если она еще не была создана
-	pdfFilePathFolder := fmt.Sprintf(config.ParentPathPdfFolderPattern, personID)
+	pdfFilePathFolder := fmt.Sprintf(config.ParentPathPdfFolderPattern, req.PersonID)
 	err = utils.FolderController(pdfFilePathFolder)
 	if err != nil{
 		return nil, err
