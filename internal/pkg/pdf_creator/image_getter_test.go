@@ -2,6 +2,7 @@ package pdf_creator
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -10,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/whitewolf185/mangaparser/internal/pkg/err_controller"
+	customerrors "github.com/whitewolf185/mangaparser/pkg/custom_errors"
 )
 
 func Test_imageGetter_GetImageAndSave(t *testing.T) {
@@ -31,6 +33,7 @@ func Test_imageGetter_GetImageAndSave(t *testing.T) {
 		name    string
 		args    args
 		cleanUp func(ttt *testing.T, folderToCleanUp string)
+		wantErr error
 	}{
 		{
 			name: "файл успешно сохранен",
@@ -47,6 +50,22 @@ func Test_imageGetter_GetImageAndSave(t *testing.T) {
 				}
 			},
 		},
+		{
+			name: "пустой боди",
+			args: args{
+				wg:               &sync.WaitGroup{},
+				folderPathToSave: "./test_pic",
+				page:             1,
+				url:              "https://img33.imgslib.link//manga/sakai-no-musume/chapters/1231421/1.jpg",
+			},
+			cleanUp: func(ttt *testing.T, folderToCleanUp string) {
+				err := os.RemoveAll(folderToCleanUp)
+				if err != nil {
+					t.Fatal(err)
+				}
+			},
+			wantErr: customerrors.ErrEmptyImage,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -59,15 +78,23 @@ func Test_imageGetter_GetImageAndSave(t *testing.T) {
 			ig := imageGetter{}
 			ig.GetImageAndSave(ctx, tt.args.wg, ec, tt.args.folderPathToSave, tt.args.page, tt.args.url)
 			tt.args.wg.Wait()
-			if erCont := ec.IsNul(); erCont != nil {
+			erCont := ec.IsNul()
+			if (len(erCont) != 0) != (tt.wantErr != nil) {
 				t.Errorf("something goes wrong. Errors:\n%v", erCont)
+				return
 			}
-			formatWithoutExt := strings.Replace(formatToSaveFile, ".%s", "", 1)
-			formatWithoutExt = formatWithoutExt + ".*"
+			if tt.wantErr == nil{
+				formatWithoutExt := strings.Replace(formatToSaveFile, "%d%s", "%d", 1)
+				formatWithoutExt = formatWithoutExt + ".*"
 
-			matches, err := filepath.Glob(fmt.Sprintf(formatWithoutExt, tt.args.folderPathToSave, tt.args.page))
-			if err != nil || matches == nil || len(matches) == 0 {
-				t.Errorf("file does not exists%s", err.Error())
+				matches, err := filepath.Glob(fmt.Sprintf(formatWithoutExt, tt.args.folderPathToSave, tt.args.page))
+				if err != nil || len(matches) == 0 {
+					t.Errorf("file does not exists %v", err)
+				}
+			} else {
+				if !errors.Is(erCont[0], tt.wantErr) {
+					t.Errorf("Wrong expected error. Errors:\n%v", erCont)
+				}
 			}
 		})
 	}

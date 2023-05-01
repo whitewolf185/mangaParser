@@ -69,7 +69,7 @@ func (i *Implementation) GetChapterPages(ctx context.Context, req *domain.GetCha
 	result.Pages = make([]domain.ImageBody, 0, result.Total)
 	for iteration, path := range pathesToImgs {
 		img, err := os.ReadFile(path)
-		if err != nil {
+		if err != nil || len(img) == 0{
 			return nil, errors.Wrapf(err, "get bytes failed on %d iteration", iteration)
 		}
 		result.Pages = append(result.Pages, domain.ImageBody{

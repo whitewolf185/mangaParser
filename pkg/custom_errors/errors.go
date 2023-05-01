@@ -11,6 +11,8 @@ var (
 	ErrEmptyDir = errors.New("empty directory")
 	// ErrEmptyStr ошибка сигнализирует о том, что пришеджая в функцию строка пустая
 	ErrEmptyStr = errors.New("empty string input")
+	// ErrEmptyImage ошибка сигнализирует о том, что полученная картинка оказалось пустой.
+	ErrEmptyImage = errors.New("no image detected")
 
 	// ErrEmailsNotFound ошибка сигнализирует о том, что не было найдено email по id пользователя
 	ErrEmailsNotFound = errors.New("emails not found")

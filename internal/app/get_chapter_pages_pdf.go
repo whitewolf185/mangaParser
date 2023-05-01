@@ -42,6 +42,8 @@ func (i *Implementation) GetChapterPagesPDF(ctx context.Context, req *domain.Get
 	}
 
 	preparedPathToDownload := fmt.Sprintf(config.ParentPathToDownloadPattern, req.PersonID, mangaName)
+	// Почистим папку, в которую скачали мангу по частям
+	defer os.RemoveAll(preparedPathToDownload)
 
 	err = i.imageController.GetImagesFromURLs(ctx, preparedPathToDownload, pageUrls)
 	if err != nil {
@@ -60,9 +62,6 @@ func (i *Implementation) GetChapterPagesPDF(ctx context.Context, req *domain.Get
 	if err != nil {
 		return nil, errors.Wrap(err, "pdf generate failed")
 	}
-	
-	// Почистим папку, в которую скачали мангу по частям
-	os.RemoveAll(preparedPathToDownload)
 
 	return &domain.GetChapterPagesPDFResponse{
 		PdfPath: pdfFilePathFolder,

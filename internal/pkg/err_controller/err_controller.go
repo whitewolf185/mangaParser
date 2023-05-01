@@ -23,7 +23,8 @@ func (e *ErrController) IsNul() []error {
 	if e.errors == nil {
 		return nil
 	}
-	result := e.errors
+	result := make([]error, len(e.errors))
+	copy(result, e.errors)
 	e.errors = nil
 	return result
 }

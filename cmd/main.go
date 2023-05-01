@@ -21,7 +21,7 @@ import (
 // @version @0.9
 // @description swagger для api к мангапарсеру
 
-// @host matvey-inc
+// @host localhost
 // @basePath /api
 
 func main() {

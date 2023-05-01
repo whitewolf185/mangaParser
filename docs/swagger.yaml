@@ -52,7 +52,7 @@ definitions:
       total_pages:
         type: integer
     type: object
-host: matvey-inc
+host: localhost
 info:
   contact: {}
   description: swagger для api к мангапарсеру

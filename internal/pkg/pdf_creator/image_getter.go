@@ -12,6 +12,7 @@ import (
 	"github.com/whitewolf185/mangaparser/internal/config"
 	"github.com/whitewolf185/mangaparser/internal/pkg/err_controller"
 	"github.com/whitewolf185/mangaparser/internal/pkg/utils"
+	customerrors "github.com/whitewolf185/mangaparser/pkg/custom_errors"
 )
 
 type imageGetter struct{}
@@ -36,10 +37,15 @@ func (ig imageGetter) GetImageAndSave(
 	go func() {
 		defer wg.Done()
 		res, err := http.Get(url)
-		if err != nil {
+		switch { // проверяем на то, что у нас может быть пустой ответ от сервиса, который выдает картинку
+		case err != nil:
 			ec.PutError(err)
 			return
+		case res.ContentLength <= 0:
+			ec.PutError(customerrors.ErrEmptyImage)
+			return
 		}
+
 		defer res.Body.Close()
 		if ctxErr := ctx.Err(); ctxErr != nil { // проверяем контекст на истечение дедлайна
 			ec.PutError(ctxErr)
