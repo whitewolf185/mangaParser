@@ -21,7 +21,7 @@ import (
 // @version @0.9
 // @description swagger для api к мангапарсеру
 
-// @host localhost
+// @host 95.165.166.169
 // @basePath /api
 
 func main() {

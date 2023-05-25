@@ -52,7 +52,7 @@ definitions:
       total_pages:
         type: integer
     type: object
-host: localhost
+host: 95.165.166.169
 info:
   contact: {}
   description: swagger для api к мангапарсеру

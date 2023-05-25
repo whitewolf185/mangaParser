@@ -6,7 +6,7 @@
         "contact": {},
         "version": "@0.9"
     },
-    "host": "localhost",
+    "host": "95.165.166.169",
     "basePath": "/api",
     "paths": {
         "/manga/GetChapterList": {

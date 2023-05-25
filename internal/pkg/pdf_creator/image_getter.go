@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"sync"
 
+	"github.com/sirupsen/logrus"
 	"github.com/whitewolf185/mangaparser/internal/config"
 	"github.com/whitewolf185/mangaparser/internal/pkg/err_controller"
 	"github.com/whitewolf185/mangaparser/internal/pkg/utils"
@@ -34,6 +35,7 @@ func (ig imageGetter) GetImageAndSave(
 		wg.Done()
 		return
 	}
+	logrus.Infof("page: %d, url: %s", page, url)
 	go func() {
 		defer wg.Done()
 		res, err := http.Get(url)

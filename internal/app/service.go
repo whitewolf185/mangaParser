@@ -38,7 +38,7 @@ type (
 	}
 )
 
-const regexpChapterCheckerPattern = `https://[a-z\.]+/[a-zA-Z\-\_]+/v[\d\.]/c[\d\.]+\?*`
+const regexpChapterCheckerPattern = `https://[a-z\.]+/[a-zA-Z\-\_\d]+/v[\d\.]+/c[\d\.]+\?*`
 
 // Implementation структура для реализации различных ручек
 type Implementation struct {

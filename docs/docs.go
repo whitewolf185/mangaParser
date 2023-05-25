@@ -204,7 +204,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "@0.9",
-	Host:             "localhost",
+	Host:             "95.165.166.169",
 	BasePath:         "/api",
 	Schemes:          []string{},
 	Title:            "Manga parser",
